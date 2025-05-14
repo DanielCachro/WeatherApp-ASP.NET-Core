@@ -1,0 +1,75 @@
+﻿@model WeatherApp.Models.WeatherAndForecast
+@{
+    ViewData["Title"] = "Pogoda";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Sprawdź pogodę</h2>
+
+    <form asp-action="Index" method="post" class="row g-3 justify-content-center mb-4">
+        <div class="col-auto">
+            <input type="text" name="city" class="form-control" placeholder="Wpisz miasto" required />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Szukaj</button>
+        </div>
+    </form>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger text-center">
+            @ViewBag.Error
+        </div>
+    }
+
+    @if (Model?.Current?.Main != null && Model.Current.Weather?.Any() == true)
+    {
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <h4 class="card-title">Aktualna pogoda w @Model.Current.Name</h4>
+                <p class="card-text">
+                    <strong>Temperatura:</strong> @Model.Current.Main.Temp.ToString("0") °C<br />
+                    <strong>Wilgotność:</strong> @Model.Current.Main.Humidity%<br />
+                    <strong>Opis:</strong> @Model.Current.Weather[0].Description
+                </p>
+                <img src="http://openweathermap.org/img/wn/@($"{Model.Current.Weather[0].Icon}@2x.png")" alt="Ikona pogody" />
+            </div>
+        </div>
+    }
+
+    @if (Model?.Forecast?.List != null)
+    {
+        <h3 class="mb-3">Prognoza 5-dniowa (co 3 godziny)</h3>
+
+        @foreach (var dayGroup in Model.Forecast.List
+            .GroupBy(f => f.DtTxt.Date)
+            .OrderBy(g => g.Key))
+        {
+            <div class="mb-4">
+                <h5 class="bg-light p-2 border rounded">
+                    @dayGroup.Key.ToString("dddd, dd.MM.yyyy", new System.Globalization.CultureInfo("pl-PL"))
+                </h5>
+                <div class="row row-cols-1 row-cols-md-3 g-3">
+                    @foreach (var item in dayGroup)
+                    {
+                        <div class="col">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted">@item.DtTxt.ToString("HH:mm")</h6>
+                                    <p class="card-text">
+                                        <strong>@item.Main?.Temp.ToString("0")</strong> °C<br />
+                                        @item.Weather?[0]?.Description
+                                    </p>
+                                    @if (item.Weather?[0]?.Icon != null)
+                                    {
+                                        <img src="http://openweathermap.org/img/wn/@($"{item.Weather[0].Icon}@2x.png")" alt="Ikona pogody" />
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
