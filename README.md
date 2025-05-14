@@ -31,5 +31,3 @@ An application that displays the current weather and a 5-day forecast for a sele
    ```bash
    dotnet run --project WeatherApp
    ```
-
-4. Open your browser at [https://localhost:5001](https://localhost:5001) or [http://localhost:5000](http://localhost:5000)
